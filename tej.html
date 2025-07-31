@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>To-Do List</title>
+  <h1>TODO TASK:</h1>
+  <style>           
+    table, th, td {
+      border: 1px solid green;
+      border-collapse: collapse;
+      padding: 6px;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    <tr>
+        <td><label>Date:</label></td>
+        <td><input type="date" id="date"></td>
+    </tr>
+    <tr>
+        <td><label>ToDo: </label></td>
+        <td><input type="text" id="todo"></td>
+    </tr>
+    <tr>
+        <td><label>Target Date & Time:</label></td>
+        <td><input type="datetime-local" id="target"></td>
+    </tr>
+    <tr>
+        <td><label>Status: </label></td>
+        <td><input type="text" id="status" disabled></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><button onclick="addNewTodo()">SUBMIT</button></td>
+    </tr>
+  </table>
+
+  <br><br>
+  <table id="todoTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Description</th>
+        <th>Target Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    let todoList = [
+      {
+        todoId: 100,
+        todoDesc: "Read Page 6",
+        targetDate: "2025-07-30 11:35",
+        todoStatus: "PENDING",
+        createDate: "2025-07-29 10:00"
+      },
+      {
+        todoId: 7,
+        todoDesc: "Write a document",
+        targetDate: "2025-07-30 12:40",
+        todoStatus: "COMPLETE",
+        createDate: "2025-07-29 10:00"
+      },
+      {
+        todoId: 3,
+        todoDesc: "Prepare a Presentation",
+        targetDate: "2025-07-30 13:40",
+        todoStatus: "IN-PROGRESS",
+        createDate: "2025-07-29 10:00"
+      }
+    ];
+
+    // Set starting todoId based on highest ID in todoList
+    let maxObj = todoList.reduce((max, item) => item.todoId > max.todoId ? item : max, { todoId: 0 });
+    let todoId = maxObj.todoId;
+
+    // Function to render a single row
+    function renderListRow(todo) {
+      const row = document.createElement("tr");
+
+      const idTd = document.createElement("td");
+      idTd.textContent = todo.todoId;
+
+      const descTd = document.createElement("td");
+      descTd.textContent = todo.todoDesc;
+
+      const targetTd = document.createElement("td");
+      targetTd.textContent = todo.targetDate;
+
+      const statusTd = document.createElement("td");
+      statusTd.textContent = todo.todoStatus;
+
+      const actionsTd = document.createElement("td");
+
+      const progressBtn = document.createElement("button");
+      progressBtn.textContent = "In-Progress";
+      progressBtn.onclick = () => {
+        todo.todoStatus = "IN-PROGRESS";
+        statusTd.textContent = "IN-PROGRESS";
+      };
+
+      const completeBtn = document.createElement("button");
+      completeBtn.textContent = "Complete";
+      completeBtn.onclick = () => {
+        todo.todoStatus = "COMPLETE";
+        statusTd.textContent = "COMPLETE";
+      };
+
+      actionsTd.appendChild(progressBtn);
+      actionsTd.appendChild(completeBtn);
+
+      row.appendChild(idTd);
+      row.appendChild(descTd);
+      row.appendChild(targetTd);
+      row.appendChild(statusTd);
+      row.appendChild(actionsTd);
+
+      document.getElementById("todoTable").querySelector("tbody").appendChild(row);
+    }
+
+    // Render initial todos
+    todoList.forEach(renderListRow);
+
+    function addNewTodo() {
+      const todoDesc = document.getElementById("todo").value.trim();
+      const targetDate = document.getElementById("target").value;
+
+      if (!todoDesc || !targetDate) {
+        alert("Please enter both description and target date.");
+        return;
+      }
+
+      todoId++;
+
+      const newTodo = {
+        todoId,
+        todoDesc,
+        targetDate,
+        todoStatus: "PENDING",
+        createDate: new Date().toISOString()
+      };
+
+      todoList.push(newTodo);
+      renderListRow(newTodo);
+
+      document.getElementById("todo").value = "";
+      document.getElementById("target").value = "";
+    }
+  </script>
+</body>
+</html
