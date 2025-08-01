@@ -1,9 +1,7 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <title>To-Do List</title>
-  <h1>TODO TASK:</h1>
   <style>           
     table, th, td {
       border: 1px solid green;
@@ -13,6 +11,8 @@
   </style>
 </head>
 <body>
+  <h1>TODO TASK:</h1>
+
   <table>
     <tr>
         <td><label>Date:</label></td>
@@ -99,17 +99,32 @@
 
       const progressBtn = document.createElement("button");
       progressBtn.textContent = "In-Progress";
-      progressBtn.onclick = () => {
-        todo.todoStatus = "IN-PROGRESS";
-        statusTd.textContent = "IN-PROGRESS";
-      };
 
       const completeBtn = document.createElement("button");
       completeBtn.textContent = "Complete";
+
+      // Button click handlers
+      progressBtn.onclick = () => {
+        todo.todoStatus = "IN-PROGRESS";
+        statusTd.textContent = "IN-PROGRESS";
+        progressBtn.disabled = true;
+        completeBtn.disabled = false;
+      };
+
       completeBtn.onclick = () => {
         todo.todoStatus = "COMPLETE";
         statusTd.textContent = "COMPLETE";
+        completeBtn.disabled = true;
+        progressBtn.disabled = true;
       };
+
+      // Initial disable state based on status
+      if (todo.todoStatus === "COMPLETE") {
+        progressBtn.disabled = true;
+        completeBtn.disabled = true;
+      } else if (todo.todoStatus === "IN-PROGRESS") {
+        progressBtn.disabled = true;
+      }
 
       actionsTd.appendChild(progressBtn);
       actionsTd.appendChild(completeBtn);
@@ -153,4 +168,4 @@
     }
   </script>
 </body>
-</html
+</html>
