@@ -26,7 +26,6 @@ public class Mycon {
 	                           @RequestParam("password") String password,
 	                           @RequestParam("email") String email,
 	                       HttpSession session) {
-		//store values in session 
 		session.setAttribute("name",name);
 		session.setAttribute("password",password);
 		session.setAttribute("email",email);
@@ -59,4 +58,5 @@ public class Mycon {
 	
 
 		
+
 
