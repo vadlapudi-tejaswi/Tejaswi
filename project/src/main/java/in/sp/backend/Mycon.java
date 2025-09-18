@@ -21,20 +21,6 @@ public class Mycon {
 	public String openRegisterPage() {
 		return "login";
 	}
-	/*@PostMapping("/logindata")
-	public String postData(@RequestParam("name") String name, @RequestParam("password") String password,
-			Model model) {
-		
-		UserIno user=new UserIno();
-		user.setName(name);
-		user.setPassword(password);
-		model.addAttribute("user1", user);
-		//model.addAttribute("name", name);
-		//model.addAttribute("password", password);
-		return "profile";
-	}*/
-	
-	
 	@PostMapping("/registerdata")
 	public String registerData(@RequestParam("name") String name,
 	                           @RequestParam("password") String password,
@@ -53,18 +39,15 @@ public class Mycon {
 	                       @RequestParam("email") String email,
 	                       HttpSession session,
 	                       Model model) {
-	    
-	    // get stored values from session
 	    String regName = (String) session.getAttribute("name");
 	    String regPassword = (String) session.getAttribute("password");
 	    String regEmail = (String) session.getAttribute("email");
 
-	    // validate
 	    if (name.equals(regName) && password.equals(regPassword) && email.equals(regEmail)) {
-	        return "profile"; // success.jsp
+	        return "profile"; 
 	    } else {
 	        model.addAttribute("error", "Invalid login credentials");
-	        return "login"; // login.jsp
+	        return "login"; 
 	    }
 	}
 	
@@ -76,3 +59,4 @@ public class Mycon {
 	
 
 		
+
