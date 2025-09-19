@@ -2,7 +2,7 @@ package com.example.dao;
 
 import com.example.dto.UserDTO;
 import java.sql.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // ✅ Import
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; 
 
 public class UserDAOImpl implements UserDAO {
 
@@ -15,11 +15,11 @@ public class UserDAOImpl implements UserDAO {
     private static final String SELECT_USER_SQL = 
         "SELECT * FROM users WHERE username = ?";
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // ✅ Encoder instance
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public UserDAOImpl() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver"); // Load MySQL driver
+            Class.forName("com.mysql.cj.jdbc.Driver"); 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -37,13 +37,13 @@ public class UserDAOImpl implements UserDAO {
             psCheck.setString(1, user.getUsername());
             ResultSet rs = psCheck.executeQuery();
             if (rs.next()) {
-                return false; // username already exists
+                return false; 
             }
 
             try (PreparedStatement psInsert = conn.prepareStatement(INSERT_USER_SQL)) {
                 psInsert.setString(1, user.getUsername());
                 
-                // ✅ Hash password before saving
+        
                 String hashedPassword = passwordEncoder.encode(user.getPassword());
                 psInsert.setString(2, hashedPassword);
                 
@@ -69,8 +69,6 @@ public class UserDAOImpl implements UserDAO {
 
             if (rs.next()) {
                 String storedPassword = rs.getString("password");
-
-                // ✅ Compare raw password with hashed one
                 return passwordEncoder.matches(password, storedPassword);
             }
         } catch (SQLException e) {

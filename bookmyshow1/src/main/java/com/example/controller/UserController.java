@@ -37,21 +37,7 @@ public class UserController {
         return "login";
     }
 
-  /*  @PostMapping("/login")
-    public String loginUser(@RequestParam String username,
-                            @RequestParam String password,
-                            Model model) {
-        boolean valid = userDAO.validateUser(username, password);
-        if (valid) {
-            model.addAttribute("username", username);
-            return "welcome";
-        } else {
-            model.addAttribute("error", "Invalid username or password.");
-            return "login";
-        }
-    }
-}*/
-    @PostMapping("/login")
+      @PostMapping("/login")
     public String loginUser(@RequestParam("username") String username,
                             @RequestParam("password") String password,
                             Model model) {
