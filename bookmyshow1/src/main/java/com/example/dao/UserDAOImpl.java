@@ -1,17 +1,29 @@
 package com.example.dao;
 
 import com.example.dto.UserDTO;
-
 import java.sql.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // ✅ Import
 
 public class UserDAOImpl implements UserDAO {
 
-    private String jdbcURL = "jdbc:mysql://localhost:3306/your_database";
-    private String jdbcUsername = "root";  // Your DB username
-    private String jdbcPassword = "password";  // Your DB password
+    private String jdbcURL = "jdbc:mysql://localhost:3306/tej?useSSL=false&serverTimezone=UTC";
+    private String jdbcUsername = "root";  
+    private String jdbcPassword = "root";  
 
-    private static final String INSERT_USER_SQL = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
-    private static final String SELECT_USER_SQL = "SELECT * FROM users WHERE username = ?";
+    private static final String INSERT_USER_SQL = 
+        "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+    private static final String SELECT_USER_SQL = 
+        "SELECT * FROM users WHERE username = ?";
+
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // ✅ Encoder instance
+
+    public UserDAOImpl() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); // Load MySQL driver
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
@@ -20,25 +32,28 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean registerUser(UserDTO user) {
         try (Connection conn = getConnection();
-             PreparedStatement psCheck = conn.prepareStatement(SELECT_USER_SQL);
-             PreparedStatement psInsert = conn.prepareStatement(INSERT_USER_SQL)) {
+             PreparedStatement psCheck = conn.prepareStatement(SELECT_USER_SQL)) {
 
-            // Check if username exists
             psCheck.setString(1, user.getUsername());
             ResultSet rs = psCheck.executeQuery();
             if (rs.next()) {
                 return false; // username already exists
             }
 
-            // Insert new user
-            psInsert.setString(1, user.getUsername());
-            psInsert.setString(2, user.getPassword());
-            psInsert.setString(3, user.getEmail());
-            int rows = psInsert.executeUpdate();
-
-            return rows > 0;
+            try (PreparedStatement psInsert = conn.prepareStatement(INSERT_USER_SQL)) {
+                psInsert.setString(1, user.getUsername());
+                
+                // ✅ Hash password before saving
+                String hashedPassword = passwordEncoder.encode(user.getPassword());
+                psInsert.setString(2, hashedPassword);
+                
+                psInsert.setString(3, user.getEmail());
+                int rows = psInsert.executeUpdate();
+                return rows > 0;
+            }
 
         } catch (SQLException e) {
+            System.out.println("SQL Error in registerUser: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -54,9 +69,12 @@ public class UserDAOImpl implements UserDAO {
 
             if (rs.next()) {
                 String storedPassword = rs.getString("password");
-                return storedPassword.equals(password);
+
+                // ✅ Compare raw password with hashed one
+                return passwordEncoder.matches(password, storedPassword);
             }
         } catch (SQLException e) {
+            System.out.println("SQL Error in validateUser: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
